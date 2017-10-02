@@ -1,7 +1,7 @@
 package com.example.huyigong.route_nightrun;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -44,24 +44,16 @@ import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleRenderer;
-import com.example.huyigong.route_nightrun.Substances.NightRunner;
-import com.example.huyigong.route_nightrun.Substances.NightRunnersInfo;
-import com.google.gson.FieldNamingPolicy;
+import com.example.huyigong.route_nightrun.substances.NightRunner;
+import com.example.huyigong.route_nightrun.substances.NightRunnersInfo;
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -312,28 +304,31 @@ public class RunningTalkFragment extends Fragment {
                                 String gender = ((int) feature.getAttributes().get("UserGender")) == 1 ? "男生" : "女生";
                                 ((TextView) calloutView.findViewById(R.id.near_people_sex)).setText(gender);
                                 Date date = new Date(((int) feature.getAttributes().get("UserAverageRunTime")) * 1000);
-                                SimpleDateFormat format = new SimpleDateFormat("HH时mm分ss秒");
+                                SimpleDateFormat format = new SimpleDateFormat("mm分ss秒");
                                 ((TextView) calloutView.findViewById(R.id.near_people_runtime)).setText(format.format(date));
                                 ((Button) calloutView.findViewById(R.id.near_people_call_it)).setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        String strURL = NEAR_PEOPLE_CALL + "?UserName=" + (String) feature.getAttributes().get("UserName");
-                                        try {
-                                            int statusCode = 1;
-                                            if (statusCode == 1) {
-                                                Toast.makeText(getContext(), "已发送请求", Toast.LENGTH_SHORT).show();
-                                                mReceiveReportTimer.schedule(new TimerTask() {
-                                                    @Override
-                                                    public void run() {
-                                                        mReceiveReportHandler.sendMessage(new Message());
-                                                    }
-                                                }, 10000);
-                                            } else {
-                                                Toast.makeText(getContext(), "发送请求失败", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } catch (Exception e) {
-                                            Toast.makeText(getContext(), "发送请求失败", Toast.LENGTH_SHORT).show();
-                                        }
+//                                        String strURL = NEAR_PEOPLE_CALL + "?UserName=" + (String) feature.getAttributes().get("UserName");
+//                                        try {
+//                                            int statusCode = 1;
+//                                            if (statusCode == 1) {
+//                                                Toast.makeText(getContext(), "已发送请求", Toast.LENGTH_SHORT).show();
+//                                                mReceiveReportTimer.schedule(new TimerTask() {
+//                                                    @Override
+//                                                    public void run() {
+//                                                        mReceiveReportHandler.sendMessage(new Message());
+//                                                    }
+//                                                }, 10000);
+//                                            } else {
+//                                                Toast.makeText(getContext(), "发送请求失败", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        } catch (Exception e) {
+//                                            Toast.makeText(getContext(), "发送请求失败", Toast.LENGTH_SHORT).show();
+//                                        }
+                                        Intent intent = new Intent(getContext(), MyChatActivity.class);
+                                        getActivity().startActivity(intent);
+
                                     }
                                 });
                                 ((Button) calloutView.findViewById(R.id.callout_close)).setOnClickListener(new View.OnClickListener() {
@@ -353,9 +348,19 @@ public class RunningTalkFragment extends Fragment {
                 return super.onSingleTapConfirmed(e);
             }
         });
+        Button button = (Button) view.findViewById(R.id.friends_circle);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ShuoshuoActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
 
         // 获取最近的人
         mNearPeopleTimer = new Timer();
+
+
         // 返回view
         return view;
     }
